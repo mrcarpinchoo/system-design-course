@@ -345,8 +345,8 @@ sudo tcpdump -i lo -A port 8443 -w https_capture.pcap &
 TCPDUMP_PID=$!
 sleep 1
 
-# Make a request to Keycloak over HTTPS
-curl -sk https://$KEYCLOAK_DNS:8443/
+# Make a request to Keycloak over HTTPS (use localhost to capture on loopback)
+curl -sk https://localhost:8443/
 
 # Stop capture
 sleep 2
