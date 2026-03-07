@@ -8,8 +8,8 @@ This guide walks you through the ECS Workshop adapted for local macOS developmen
 
 ```bash
 # Run the setup script
-chmod +x setup.sh
-./setup.sh
+chmod +x setup-minimal.sh
+./setup-minimal.sh
 
 # Configure AWS credentials
 aws configure
@@ -273,7 +273,7 @@ copilot svc logs -n ecsdemo-frontend
 # Connect to the bastion host (CDK deployment creates one)
 aws ssm start-session --target i-xxxxxxxxx
 
-# Or use siege locally (installed via setup.sh)
+# Or use siege locally (installed via setup-minimal.sh)
 siege -c 10 -t 60s http://your-load-balancer-url
 ```
 
@@ -347,7 +347,7 @@ copilot app delete ecsworkshop
 1. **CDK Bootstrap Error**
 
    ```bash
-   cdk bootstrap aws://311141527383/us-east-1
+   cdk bootstrap aws://YOUR_AWS_ACCOUNT_ID/us-east-1
    ```
 
 2. **Docker Not Running**

@@ -40,9 +40,10 @@ failover behavior.
 ## Lab Structure
 
 ```text
-HAProxy Load Balancing Demo/
+03-load-balancing-haproxy/
 ├── README.md                    # This file
 ├── setup.sh                     # Initial setup script
+├── cleanup.sh                   # Cleanup script
 ├── configs/                     # HAProxy configurations
 │   ├── 01-roundrobin.cfg
 │   ├── 02-leastconn.cfg
@@ -51,15 +52,15 @@ HAProxy Load Balancing Demo/
 │   ├── 05-source-hash.cfg
 │   ├── 06-uri-hash.cfg
 │   └── 07-failover.cfg
-├── scripts/                     # Test scripts
-│   ├── test-roundrobin.sh
-│   ├── test-leastconn.sh
-│   ├── test-weighted.sh
-│   ├── test-source-hash.sh
-│   ├── test-uri-hash.sh
-│   ├── test-failover.sh
-│   └── load-test.sh
-└── cleanup.sh                   # Cleanup script
+└── scripts/                     # Test scripts
+    ├── test-roundrobin.sh
+    ├── test-leastconn.sh
+    ├── test-random.sh
+    ├── test-weighted.sh
+    ├── test-source-hash.sh
+    ├── test-uri-hash.sh
+    ├── test-failover.sh
+    └── load-test.sh
 ```
 
 ## Quick Start
@@ -68,7 +69,7 @@ HAProxy Load Balancing Demo/
 
 ```bash
 git clone https://github.com/gamaware/system-design-course.git
-cd system-design-course/HAProxy\ Load\ Balancing\ Demo
+cd system-design-course/03-load-balancing-haproxy
 ```
 
 ### 2. Run Setup
@@ -95,6 +96,9 @@ Each algorithm has its own test script:
 
 # Test Least Connections
 ./scripts/test-leastconn.sh
+
+# Test Random
+./scripts/test-random.sh
 
 # Test Weighted Round Robin
 ./scripts/test-weighted.sh
@@ -147,7 +151,18 @@ Run load test to observe behavior under stress:
 
 **Expected Result**: When one server is busy, new requests go to less loaded servers.
 
-### Scenario 3: Weighted Round Robin
+### Scenario 3: Random
+
+**Objective**: Observe non-deterministic request distribution.
+
+```bash
+./scripts/test-random.sh
+```
+
+**Expected Result**: Requests distributed randomly across backends with no predictable pattern,
+but roughly even over many requests.
+
+### Scenario 4: Weighted Round Robin
 
 **Objective**: Distribute traffic based on server capacity.
 
@@ -161,7 +176,7 @@ Run load test to observe behavior under stress:
 - Backend 2: ~30% of traffic (weight 30)
 - Backend 3: ~20% of traffic (weight 20)
 
-### Scenario 4: Source IP Hash
+### Scenario 5: Source IP Hash
 
 **Objective**: Maintain session persistence based on client IP.
 
@@ -171,7 +186,7 @@ Run load test to observe behavior under stress:
 
 **Expected Result**: All requests from the same IP go to the same backend server.
 
-### Scenario 5: URI Hash
+### Scenario 6: URI Hash
 
 **Objective**: Route requests based on URL path for caching optimization.
 
@@ -181,7 +196,7 @@ Run load test to observe behavior under stress:
 
 **Expected Result**: Same URI always routes to the same backend server.
 
-### Scenario 6: Failover and Health Checks
+### Scenario 7: Failover and Health Checks
 
 **Objective**: Observe automatic failover when a backend fails.
 
