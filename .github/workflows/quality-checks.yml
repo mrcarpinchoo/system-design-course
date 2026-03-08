@@ -60,6 +60,23 @@ jobs:
           config_file: '.yamllint.yml'
           strict: false
 
+  dockerfile-lint:
+    name: Dockerfile Linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install hadolint
+        run: |
+          curl -sL -o hadolint \
+            "https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64"
+          chmod +x hadolint
+
+      - name: Run hadolint (excluding third-party Dockerfiles)
+        run: |
+          find . -name 'Dockerfile*' ! -path '*/ecsdemo-*' \
+            -exec ./hadolint --ignore DL3008 {} +
+
   file-structure:
     name: Validate Repository Structure
     runs-on: ubuntu-latest
