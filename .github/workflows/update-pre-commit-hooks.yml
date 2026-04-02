@@ -22,4 +22,4 @@ jobs:
       - name: Update Hooks
         uses: ./.github/actions/update-pre-commit-composite
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PRE_COMMIT_PAT }}
