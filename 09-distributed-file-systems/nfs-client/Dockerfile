@@ -8,6 +8,7 @@ RUN apt-get update \
        ca-certificates \
        unzip \
        procps \
+       less \
     && rm -rf /var/lib/apt/lists/*
 
 # Install AWS CLI v2 (auto-detect architecture)
