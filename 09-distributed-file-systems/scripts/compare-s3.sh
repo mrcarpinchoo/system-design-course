@@ -27,6 +27,12 @@ else
 fi
 MINIO_BUCKET="lab09-minio-test-$(date +%s)"
 
+# Wrapper for MinIO calls using its own credentials
+minio_aws() {
+    AWS_ACCESS_KEY_ID=minioadmin AWS_SECRET_ACCESS_KEY=minioadmin123 AWS_SESSION_TOKEN= \
+        aws --endpoint-url "$MINIO_ENDPOINT" "$@"
+}
+
 # Initialize timing variables (prevents unbound errors if a step fails)
 minio_create=0 s3_create=0
 minio_upload=0 s3_upload=0
@@ -67,7 +73,7 @@ echo ""
 
 echo "  MinIO:"
 time_start=$(date +%s%N)
-aws --endpoint-url "$MINIO_ENDPOINT" s3 mb "s3://$MINIO_BUCKET" 2>&1 | sed 's/^/    /'
+minio_aws s3 mb "s3://$MINIO_BUCKET" 2>&1 | sed 's/^/    /'
 time_end=$(date +%s%N)
 minio_create=$(( (time_end - time_start) / 1000000 ))
 echo "    Time: ${minio_create} ms"
@@ -87,7 +93,7 @@ echo ""
 
 echo "  MinIO:"
 time_start=$(date +%s%N)
-aws --endpoint-url "$MINIO_ENDPOINT" s3 cp /tmp/s3-test-file.txt \
+minio_aws s3 cp /tmp/s3-test-file.txt \
     "s3://$MINIO_BUCKET/test-file.txt" 2>&1 | sed 's/^/    /'
 time_end=$(date +%s%N)
 minio_upload=$(( (time_end - time_start) / 1000000 ))
@@ -108,7 +114,7 @@ echo ""
 
 echo "  MinIO:"
 time_start=$(date +%s%N)
-aws --endpoint-url "$MINIO_ENDPOINT" s3 ls "s3://$MINIO_BUCKET/" 2>&1 | sed 's/^/    /'
+minio_aws s3 ls "s3://$MINIO_BUCKET/" 2>&1 | sed 's/^/    /'
 time_end=$(date +%s%N)
 minio_list=$(( (time_end - time_start) / 1000000 ))
 echo "    Time: ${minio_list} ms"
@@ -128,7 +134,7 @@ echo ""
 
 echo "  MinIO:"
 time_start=$(date +%s%N)
-aws --endpoint-url "$MINIO_ENDPOINT" s3 sync /tmp/s3-sync-test/ \
+minio_aws s3 sync /tmp/s3-sync-test/ \
     "s3://$MINIO_BUCKET/synced/" 2>&1 | sed 's/^/    /'
 time_end=$(date +%s%N)
 minio_sync=$(( (time_end - time_start) / 1000000 ))
@@ -148,7 +154,7 @@ echo "=== Operation 5: Generate Presigned URL ==="
 echo ""
 
 echo "  MinIO:"
-aws --endpoint-url "$MINIO_ENDPOINT" s3 presign \
+minio_aws s3 presign \
     "s3://$MINIO_BUCKET/test-file.txt" --expires-in 3600 2>&1 | sed 's/^/    /'
 echo ""
 
@@ -161,8 +167,8 @@ echo "=== Cleanup ==="
 echo ""
 
 echo "  Cleaning MinIO..."
-aws --endpoint-url "$MINIO_ENDPOINT" s3 rm "s3://$MINIO_BUCKET" --recursive || true
-aws --endpoint-url "$MINIO_ENDPOINT" s3 rb "s3://$MINIO_BUCKET" || true
+minio_aws s3 rm "s3://$MINIO_BUCKET" --recursive || true
+minio_aws s3 rb "s3://$MINIO_BUCKET" || true
 echo "    Done."
 
 echo "  Cleaning AWS S3..."
