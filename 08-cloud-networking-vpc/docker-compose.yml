@@ -1,0 +1,17 @@
+services:
+  aws-cli:
+    image: amazon/aws-cli:latest
+    working_dir: /workspace
+    entrypoint: ["tail", "-f", "/dev/null"]
+    volumes:
+      - ./cloudformation:/workspace/cloudformation
+    env_file:
+      - .env
+  terraform:
+    image: hashicorp/terraform:latest
+    working_dir: /workspace
+    entrypoint: ["tail", "-f", "/dev/null"]
+    volumes:
+      - ./terraform:/workspace
+    env_file:
+      - .env
